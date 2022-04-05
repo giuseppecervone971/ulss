@@ -1,0 +1,8 @@
+APPUNTI:
+
+- L'entità LIBRO risulta non necessaria ai fini del diagramma ER per identificare il singolo libro, rimpiazzato da COPIA (valuteremo
+in un secondo momento un eventuale reintegro); da verificare le relazioni alle quali è legata l'entità
+
+- L'attributo N.COPIA (Univoco) anch'esso non necessario perchè rimpiazzato da ID UNIVOCO, come da istruzioni nella traccia
+
+- 

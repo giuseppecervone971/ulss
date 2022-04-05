@@ -1,0 +1,159 @@
+html,body {
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
+	left: 0px;
+	top: 0px;
+}
+
+input[type=text] {
+  width: 130px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  background: rgb(1,120,153);
+  padding: 12px 20px 12px 20px;
+  -webkit-transition: width 0.4s ease-in-out;
+  transition: width 0.4s ease-in-out;
+}
+
+input[type=text]:focus {
+  width: 80%;
+  color: white !important;
+  text-align: center !important;
+}
+
+table, th, td {
+  border: 1px solid white;
+  border-collapse: collapse;
+  padding: 15px;
+}
+
+.row {
+  display: flex !important;
+  padding-bottom: 20px !important;
+}
+.btn-primary {
+  display: inline-block !important;
+  position: absolute;
+  width: 25%;
+  margin-left: 100px;
+}
+.btn-secondary {
+  background-color: red !important;
+  position: relative;
+  float: right;
+  width: 25%;
+}
+
+.form-inline .form-control {
+  width: 500px !important;
+  color: white !important;
+  background-color: rgb(1,120,153) !important;
+}
+
+.col {
+	padding-left: 0px !important;
+	padding-right: 0px !important;
+}
+
+.col-form-label {
+	font-size: 16px !important;
+	padding-left: 20px !important;
+	padding-right: 0px !important;
+	width: 150px !important;
+	height: 25px !important;
+}
+
+.form-control {
+	float: left !important;
+}
+
+.nav-link {
+	background-color: transparent !important;
+	font-size: 30px;
+	font-family: "Helvetica";
+	color: white !important;
+}
+
+.dropdown-menu {
+	background-color: white !important;
+	width: 100% !important;
+	font-size: 30px !important;
+}
+
+.dropdown-item {
+	font-family: "Helvetica" !important;
+	font-size: 20px !important;
+	color: black !important;
+	text-align: center !important;
+}
+
+.dropdown-item:hover {
+	background: rgb(1,120,153) !important;
+}
+
+.collabel {
+  float: left;
+  width: 10%;
+  margin-top: 6px;
+  margin-left: 300px;
+}
+
+.colinput {
+  float: left;
+  width: 50%;
+  margin-top: 6px;
+}
+
+.addform input[type=text], select {
+  background: rgb(1,120,153);
+  width: 75%;
+  padding: 10px 20px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: white;
+}
+
+.addform label {
+  display: inline-block;
+}
+
+.addform input[type=submit],[type=button] {
+  float: left !important;
+  width: 15%;
+  background: rgb(100,102,153);
+  color: white;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  float:right;
+  margin-right: 450px;
+  margin-top: 20px;
+  margin-bottom: 50px;
+}
+
+.addform input[type=submit]:hover {
+  background: rgb(100,102,160);
+}
+
+img {
+  width: 80%;
+}
+
+body {
+  font-family: Helvetica;
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::placeholder {
+  color: white !important;
+}

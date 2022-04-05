@@ -1,0 +1,74 @@
+Use Biblioteca;
+
+SET NAMES default;
+
+LOAD DATA LOCAL INFILE '/home/peppo/University/12_BasiDiDati/ulss/project_data/Authors.csv'
+INTO TABLE AUTHOR FIELDS
+TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA LOCAL INFILE '/home/peppo/University/12_BasiDiDati/ulss/project_data/Editors.csv'
+INTO TABLE EDITOR FIELDS
+TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA LOCAL INFILE '/home/peppo/University/12_BasiDiDati/ulss/project_data/Books.csv'
+INTO TABLE BOOK FIELDS 
+TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA LOCAL INFILE '/home/peppo/University/12_BasiDiDati/ulss/project_data/Copies.csv'
+INTO TABLE COPY FIELDS
+TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA LOCAL INFILE '/home/peppo/University/12_BasiDiDati/ulss/project_data/Libraries.csv'
+INTO TABLE LIBRARY FIELDS
+TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA LOCAL INFILE '/home/peppo/University/12_BasiDiDati/ulss/project_data/FoundIn.csv'
+INTO TABLE FOUND_IN FIELDS
+TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA LOCAL INFILE '/home/peppo/University/12_BasiDiDati/ulss/project_data/IsAvailable.csv'
+INTO TABLE IS_AVAILABLE FIELDS
+TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA LOCAL INFILE '/home/peppo/University/12_BasiDiDati/ulss/project_data/WrittenBy.csv'
+INTO TABLE WRITTEN_BY FIELDS
+TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+
+LOAD DATA LOCAL INFILE '/home/peppo/University/12_BasiDiDati/ulss/project_data/Students.csv'
+INTO TABLE STUDENT FIELDS
+TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA LOCAL INFILE '/home/peppo/University/12_BasiDiDati/ulss/project_data/RentedBy.csv'
+INTO TABLE RENTED_BY FIELDS
+TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;

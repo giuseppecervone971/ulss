@@ -1,0 +1,147 @@
+Queries:
+Se volessimo fare un insert con uno numero di matricola inserito dall'utente, comunque dovrebbe rispettare i canoni preimposti da noi, quindi sarebbe qualcosa del genere.
+La tabella STUDENT DIVENTA:
+REATE TABLE STUDENT (
+    STUDENT_N   INT(7) NOT NULL,
+    F_NAME      VARCHAR(24) NOT NULL,
+    L_NAME      VARCHAR(24) NOT NULL,
+    ADDR        VARCHAR(50),
+    PHONE_N     VARCHAR(15) NOT NULL,
+    PRIMARY KEY(STUDENT_N)
+);
+SENZA UN :ALTER TABLE STUDENT AUTO_INCREMENT = 1000000;
+e il codice di inserimento diventa...
+
+php:
+$id_lenght = strlen((string)$STUDENT_N);
+
+        if ($id_lenght == 7) {
+            $sql = "INSERT INTO STUDENT VALUES('$STUDENT_N', '$F_NAME', '$L_NAME', '$ADDR', '$PHONE_N');";
+            $query = mysqli_query($link, $sql) or trigger_error("Query Failed! SQL: $sql - Error: ".mysqli_error($link), E_USER_ERROR); //dove trigger error dira' che gia' c'e' una chiave primaria uguale
+
+        } else  {
+            print = ("Integer of incorrect lenght\n");
+        }
+
+
+        
+        
+per la add loan invece, se vuoi usare l'isbn e l'user id invece dei valori correnti, devi fare:
+
+$sql = "SELECT MAX(f.ID_COPY) INTO @copy FROM FOUND_IN AS f
+LEFT JOIN RENTED_BY AS r ON f.ID_BOOK = r.ISBN AND
+f.ID_COPY = r.ID_COPY AND f.LIBRARY_ID = r.LIBRARY_ID
+WHERE r.ID_COPY IS NULL AND f.ID_BOOK = '$ISBN' AND f.LIBRARY_ID = '$LIBRARY_ID';";
+$sql.= "SELECT DATE_ADD('$STARTDATE', INTERVAL 30 DAY) INTO @date;";
+$sql.= "INSERT INTO RENTED_BY VALUES ('$STUDENT_N', @copy, '$ISBN', '$LIBRARY_ID', '$STARTDATE', @date);";
+$sql.= "SELECT * FROM RENTED_BY WHERE (USER_ID = '$STUDENT_N' AND ID_COPY = @copy AND ISBN = '$ISBN' AND LIBRARY_ID = '$LIBRARY_ID' AND STARTDATE = '$STARTDATE' AND ENDDATE = @date);";
+
+
+
+
+
+AGGIORNATE PER INCLUSIONE DI ID LIBRERIA IN RENTED_BY
+-   NUOVO PRESTITO (SELEZIONA IL NUMERO COPIA PIU' ALTO FRA TUTTE LE COPIE DISPONIBILI, UNA COPIA E' DISPONIBILE QUANDO E' PRESENTE NELLA TABELLA COPIE MA NON IN QUELLA RENTED_BY):
+        $sql = "SELECT ISBN INTO @id FROM BOOK WHERE TITLE = '$TITLE';";
+        $sql.= "SELECT LIB_ID INTO @lid FROM LIBRARY WHERE LIB_ID = '$LIBRARY_ID';";
+        $sql.= "SELECT MAX(f.ID_COPY) INTO @copy FROM FOUND_IN AS f
+        LEFT JOIN RENTED_BY AS r ON f.ID_BOOK = r.ISBN AND
+        f.ID_COPY = r.ID_COPY AND f.LIBRARY_ID = r.LIBRARY_ID
+        WHERE r.ID_COPY IS NULL AND f.ID_BOOK = @id AND f.LIBRARY_ID = @lid";
+        $sql.= "SELECT STUDENT_N INTO @studid FROM STUDENT WHERE F_NAME = '$F_NAME' and L_NAME='$L_NAME';";
+        $sql.= "SELECT DATE_ADD('$STARTDATE', INTERVAL 30 DAY) INTO @date;";
+        $sql.= "INSERT INTO RENTED_BY VALUES (@studid, @copy, @id, @lid, '$STARTDATE', @date);";
+
+        
+-   MODIFICA PRESTITO: (DATO UN NOME DEL LIBRO E UN ID STUDENTE, SI SPOSTA IL PRESTITO LEGATO A QUEI DUE VALORI ALLA DATA PRESCELTA).
+        UPDATE RENTED_BY SET ENDDATE = '$ENDDATE' WHERE ISBN = '$ISBN' AND USER_ID = '$STUDENT_N' AND ID_COPY = '$ID_COPY' AND LIBRARY_ID = '$LIBRARY_ID';
+    
+-   CANCELLA PRESTITO: (DATO NOME LIBRO, E NOME E COGNOME DELLO STUDENTE, SI CANCELLA IL PRESTITO DI QUELL'UTENTE SU QUEL LIBRO).
+        $sql = "DELETE FROM RENTED_BY WHERE (USER_ID = '$STUDENT_N' AND ISBN = '$ISBN' AND ID_COPY = '$ID_COPY' AND LIBRARY_ID = '$LIBRARY_ID');";
+
+-   TUTTI I PRESTITI:
+    SELECT s.STUDENT_N, s.F_NAME, s.L_NAME, b.TITLE, d.ID_COPY, d.LIBRARY_ID, d.STARTDATE, d.ENDDATE
+            FROM STUDENT AS s INNER JOIN RENTED_BY d
+            INNER JOIN BOOK AS b
+            WHERE s.STUDENT_N = d.USER_ID AND b.ISBN = d.ISBN;
+            
+-   TUTTI I LIBRI IN PRESTITO AD 1 UTENTE:
+        (ORDINE DI STAMPA TITOLO LIBRO, NUMERO COPIA, ISBN, ID_LIBRERIA, INIZIO PRESTITO, FINE PRESTITO):
+        $sql="SELECT b.TITLE, r.ID_COPY, r.ISBN, r.LIBRARY_ID, r.STARTDATE, r.ENDDATE FROM 
+        STUDENT AS s INNER JOIN RENTED_BY AS r ON s.STUDENT_N = r.USER_ID
+        INNER JOIN BOOK AS b ON b.ISBN = r.ISBN
+        WHERE s.STUDENT_N = '$STUDENT_N';";
+
+-   OGNI UTENTE A CUI E' IN PRESTITO IL LIBRO:
+        (ORDINE DI STAMPA NOME, COGNOME, NUMERO COPIA, ID_LIBRERIA, DATA INIZIO PRESTITO, DATA FINE PRESTITO)
+        $sql = "SELECT s.F_NAME, s.L_NAME, s.STUDENT_N, r.ID_COPY, r.LIBRARY_ID, r.STARTDATE, r.ENDDATE FROM STUDENT AS s INNER JOIN RENTED_BY AS r ON s.STUDENT_N = r.USER_ID INNER JOIN BOOK AS b ON b.ISBN = r.ISBN WHERE b.ISBN = '$ISBN';";
+
+            
+            
+QUA TUTTE NORMALI
+-   Tutti i libri:
+    SELECT * FROM BOOK;
+        
+
+-   Informazioni dell'autore su un libro:
+SELECT a.FIRST_NAME, a.LAST_NAME, a.DATE_BIRTH, a.PLACE_BIRTH, e.NAME, COUNT(c.COPY_N) 
+FROM BOOK as b INNER JOIN WRITTEN_BY AS w ON b.ISBN = w.BOOK_ID
+INNER JOIN AUTHOR AS a ON w.AUTHOR_ID = a.SSN
+INNER JOIN EDITOR AS e ON b.ID_EDITOR = e.EDITOR_ID
+INNER JOIN COPY AS c ON c.ISBN = b.ISBN 
+WHERE b.ISBN = '$ISBN'
+GROUP BY a.SSN;
+
+-   5 Lingue piu' comuni:
+SELECT LANGUAGE,COUNT(LANGUAGE) AS N_of_times FROM BOOK GROUP BY LANGUAGE ORDER BY N_of_times DESC LIMIT 5;
+
+-   Autore che ha scritto piu' libri:
+SELECT a.FIRST_NAME, a.LAST_NAME, COUNT(a.SSN) AS N_of_books_written FROM AUTHOR as a INNER JOIN WRITTEN_BY as w  WHERE a.SSN = w.AUTHOR_ID  GROUP BY a.SSN ORDER BY N_of_books_written DESC LIMIT 1;
+
+-   Editore che ha publicato piu' libri:
+SELECT e.EDITOR_ID, e.NAME, COUNT(b.ID_EDITOR) AS N_of_books_published FROM BOOK as b INNER JOIN EDITOR as e WHERE e.EDITOR_ID = b.ID_EDITOR GROUP BY b.ID_EDITOR ORDER BY N_of_books_published DESC LIMIT 1;
+
+-   Succursale con piu' libri:
+SELECT l.NAME, COUNT(f.LIBRARY_ID) AS N_of_books_in_library FROM LIBRARY as l INNER JOIN FOUND_IN as f WHERE f.LIBRARY_ID = l.LIB_ID GROUP BY f.LIBRARY_ID ORDER BY N_of_books_in_library DESC LIMIT 1;
+
+-   5 Libri con piu' copie:
+SELECT b.TITLE, COUNT(c.ISBN) AS N_of_copies FROM BOOK as b INNER JOIN COPY as c WHERE b.ISBN = c.ISBN GROUP BY c.ISBN ORDER BY N_of_copies DESC LIMIT 5;
+
+-   CANCELLA UTENTE: (DATO ID, SI CANCELLA DALLA TABELLA STUDENTI, automaticamente si liberano tutti i prestiti) NO MULTI
+        $sql = DELETE FROM STUDENT WHERE STUDENT_N = '$STUDENT_N';
+
+-   RICERCA PARZIALE UTENTE: (Con un poco di codice PHP commentato. Funzionamento: Data una stringa da un solo elemento, o una stringa del tipo "COGNOME NOME" oppure "NOME COGNOME", ritorna tutti coloro che contengono parte delle due stringhe o nel nome o nel congome. Utilizziamo la funzione explode per dividiere stringa in due parti diverse) NON MULTI.
+
+    $pieces = explode(" ", $(come hai chiamato input della barra spaziatrice));
+    $sql = SELECT STUDENT_N, F_NAME, L_NAME, ADDR, PHONE_N FROM STUDENT WHERE (F_NAME LIKE '%$pieces[0]%' OR L_NAME LIKE '%$pieces[1]%' OR F_NAME LIKE '%$pieces[1]%' OR L_NAME LIKE '%$pieces[0]%');
+    
+
+-   RICERCA PARZIALE LIBRO: (solo codice SQL) (STAMPA TUTTE LE ENTRATE IN LIBRO PER CUI LA STRINGA IN INPUT E' PARTE DEL NOME)
+        $sql = "SELECT ISBN, TITLE, PUB_YEAR, LANGUAGE FROM BOOK WHERE TITLE LIKE '%come chiami input da tastiera%'";
+
+PAGINA SUCCURSALE:
+-   TUTTE LE SUCCURSALI:
+        SELECT * FROM LIBRARY;
+        
+
+PAGINA ADD:
+-   NUOVO UTENTE:
+        INSERT INTO STUDENT(F_NAME, L_NAME, ADDR, PHONE_N) VALUES ('$F_NAME', '$L_NAME', '$ADDR', '$PHONE_N'); 
+
+        
+-   MODIFICA UTENTE: (misto di PHP ed SQL) (IN BASE ALLE INFO CHE SI VOGLIONO CAMBIARE DI UN SINGOLO, PRESI NOME E COGNOME ACCEDIAMO A 3 POSSIBILI MODALITA', CAMBIO TELEFONO E INDIRIZZO, CAMBIO TELEFONO E CAMBIO INDIRIZZO) SI MULTI.
+        $sql="";
+        if(!empty($ADDR)) {
+            $sql.= "UPDATE STUDENT SET ADDR = '$ADDR' WHERE STUDENT_N = '$STUDENT_N';";
+        } 
+        if (!empty($PHONE_N)) {
+            $sql.= "UPDATE STUDENT SET PHONE_N = '$PHONE_N' WHERE STUDENT_N = '$STUDENT_N';";
+        } 
+        if (!empty($F_NAME)){
+            $sql.= "UPDATE STUDENT SET F_NAME = '$F_NAME' WHERE STUDENT_N = '$STUDENT_N';";
+        }
+        if (!empty($L_NAME)) {
+            $sql.= "UPDATE STUDENT SET L_NAME = '$L_NAME' WHERE STUDENT_N = '$STUDENT_N';";
+        }
+        
+        
